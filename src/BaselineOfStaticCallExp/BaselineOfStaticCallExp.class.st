@@ -11,6 +11,9 @@ BaselineOfStaticCallExp >> baseline: spec [
 	<baseline>
 	spec for: #common do: [ "Packages"
 		spec
+			baseline: 'VMMaker' with: [
+				spec repository:
+						'github://fouziray/pharo-vm:staticSendFixTrampolineFromJitToInterpreter/smalltalksrc' ];
 			package: 'StaticCallExp';
 			package: 'StaticCallExpBuilder'
 			with: [ spec requires: #( 'VMMaker' 'StaticCallExp' ) ];
