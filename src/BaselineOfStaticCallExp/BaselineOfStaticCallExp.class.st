@@ -28,6 +28,7 @@ BaselineOfStaticCallExp >> baseline: spec [
 		spec
 			group: 'default'
 			with:
-			#( 'StaticCallExpBuilder-Tests' 'StaticCallExp-Tests' ).
+			"#( 'StaticCallExp-Tests' )."
+			#( 'VMMaker' 'StaticCallExp-Tests')
 		 ]
 ]
