@@ -13,7 +13,7 @@ BaselineOfStaticCallExp >> baseline: spec [
 		spec
 			baseline: 'VMMaker' with: [
 				spec repository:
-						'github://fouziray/pharo-vm:staticSendFixTrampolineFromJitToInterpreter/smalltalksrc' ];
+						'github://fouziray/pharo-vm:newMovingChange/smalltalksrc' ];
 			package: 'StaticCallExp';
 			package: 'StaticCallExpBuilder'
 			with: [ spec requires: #( 'VMMaker' 'StaticCallExp' ) ];
