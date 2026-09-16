@@ -5,14 +5,14 @@ Class {
 	#package : 'StaticCallExp-Tests'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'tests - support' }
 CompilerStaticCallTest >> foo [ 
 	|aCol|
 	aCol := OrderedCollection new.
 	^ self _Object_as: CompilerStaticCallTest
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'tests - support' }
 CompilerStaticCallTest >> foo2 [ 
 	|aCol|
 	aCol := OrderedCollection new.
