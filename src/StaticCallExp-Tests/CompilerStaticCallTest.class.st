@@ -5,6 +5,33 @@ Class {
 	#package : 'StaticCallExp-Tests'
 }
 
+{ #category : 'as yet unclassified' }
+CompilerStaticCallTest >> foo [ 
+	|aCol|
+	aCol := OrderedCollection new.
+	^ self _Object_as: CompilerStaticCallTest
+]
+
+{ #category : 'as yet unclassified' }
+CompilerStaticCallTest >> foo2 [ 
+	|aCol|
+	aCol := OrderedCollection new.
+	^ 2 _SmallInteger_+ 2
+]
+
+{ #category : 'tests - compiler' }
+CompilerStaticCallTest >> testImplicitStaticCallResolveToCorrectMethodLookup [
+
+	| compiledMethod irMethod |
+	
+	compiledMethod := OpalCompiler new compile: 'foo ^ 13 _factorial'.
+	
+	irMethod := compiledMethod ast generateIR.
+	
+	self assert: irMethod allSequences first sequence second calledMethod equals: Integer >> #factorial
+	
+]
+
 { #category : 'tests - parsing' }
 CompilerStaticCallTest >> testMethodContainsStaticCall [
 
@@ -45,16 +72,35 @@ CompilerStaticCallTest >> testParsingKeywordStaticMessage [
 	
 ]
 
-{ #category : 'tests - compiler' }
-CompilerStaticCallTest >> testStaticCallIrStaticNode [
+{ #category : 'tests - runtime' }
+CompilerStaticCallTest >> testReflectivlyInvokeSpecificMethod [
+	
+	| factorialResult |
+	
+	factorialResult := 6 factorial.
+	
+	SmallInteger compileSilently: 'factorial ^42'.
+	
+	self assert: 6 factorial equals: 42.
+	self assert: (( Integer>>#factorial )  invokeWithReceiver:  6 withArgs: {} ) equals: factorialResult.
+	
+	SmallInteger removeSelector: #factorial.
+]
 
-	| compiledMethod irMethod |
-	compiledMethod := OpalCompiler new compile: 'foo ^ 13 _myFactorial'.
-	
-	irMethod := compiledMethod ast generateIR.
-	
-	self assert: irMethod allSequences first sequence second calledMethod equals: SmallInteger >>#myFactorial
-	
+{ #category : 'tests - compiler' }
+CompilerStaticCallTest >> testStaticCallCompilerEmitCorrectBytecode [
+
+	| compiledMethod |
+	compiledMethod := OpalCompiler new compile: 'foo ^ 13 _factorial'.
+
+	self assert: (compiledMethod bytecodes at: 2) equals: 246
+]
+
+{ #category : 'tests - compiler' }
+CompilerStaticCallTest >> testStaticCallFalseReceiver [
+
+self should: [ true _SmallInteger_asFloat ] raise:  Exception
+
 ]
 
 { #category : 'tests - compiler' }
@@ -86,46 +132,16 @@ CompilerStaticCallTest >> testStaticCallIrStaticNodeKeyword [
 	
 ]
 
-{ #category : 'tests' }
-CompilerStaticCallTest >> testStaticCallOnVariableWithClassTag [
+{ #category : 'tests - runtime' }
+CompilerStaticCallTest >> testStaticCallWithExplicitMethod [
 
-	| aVariable |
-	aVariable := 4.
-	self assert: aVariable _Integer_factorial equals: 4 factorial
+	self assert: 4 _Integer_factorial equals: 4 factorial
 ]
 
-{ #category : 'tests' }
-CompilerStaticCallTest >> testStaticCallRunOnNewVM [
-
+{ #category : 'tests - runtime' }
+CompilerStaticCallTest >> testStaticCallWithoutAnExplicitMethod [
+	"_asFloat means that a lookup is done at compile time and the looked up method is bound to this call site"
 	self assert: 13 _asFloat equals: 13 asFloat
-]
-
-{ #category : 'tests' }
-CompilerStaticCallTest >> testStaticCallWithClassTag [
-
-	self assert: (4 _Integer_factorial) equals: (4 factorial)
-]
-
-{ #category : 'tests' }
-CompilerStaticCallTest >> testStaticInvokeMethodWithArgs [
-
-	self assert: (( Integer>>#factorial )  invokeWithReceiver:  6 withArgs: {} ) equals: ( 6 factorial)
-]
-
-{ #category : 'tests - compiler' }
-CompilerStaticCallTest >> testStaticMessageCompilerEmitCorrectBytecode [
-
-	| compiledMethod |
-	compiledMethod := OpalCompiler new compile: 'foo ^ 13 _myFactorial'.
-
-	self assert: (compiledMethod bytecodes at: 2) equals: 246
-]
-
-{ #category : 'tests - compiler' }
-CompilerStaticCallTest >> testStaticMessageFalseReceiver [
-
-self should:  [true _SmallInteger_asFloat] raise:  Exception . 
-
 ]
 
 { #category : 'tests - compiler' }
