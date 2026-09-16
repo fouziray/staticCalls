@@ -1,1 +1,0 @@
-Package { #name : 'StaticCallExpBuilder-Tests' }
