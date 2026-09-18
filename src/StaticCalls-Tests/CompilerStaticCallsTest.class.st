@@ -60,7 +60,6 @@ CompilerStaticCallsTest >> testParsingKeywordStaticMessage [
 
 { #category : 'tests - runtime' }
 CompilerStaticCallsTest >> testReflectivlyInvokeSpecificMethod [
-	
 	| factorialResult |
 	
 	factorialResult := 6 factorial.
@@ -68,9 +67,7 @@ CompilerStaticCallsTest >> testReflectivlyInvokeSpecificMethod [
 	SmallInteger compileSilently: 'factorial ^42'.
 	
 	self assert: 6 factorial equals: 42.
-	self assert: (( Integer>>#factorial )  invokeWithReceiver:  6 withArgs: {} ) equals: factorialResult.
-	
-	SmallInteger removeSelector: #factorial.
+	self assert: (( Integer>>#factorial )  invokeWithReceiver:  6 withArgs: {} ) equals: factorialResult
 ]
 
 { #category : 'tests - compiler' }
@@ -82,10 +79,11 @@ CompilerStaticCallsTest >> testStaticCallCompilerEmitCorrectBytecode [
 	self assert: (compiledMethod bytecodes at: 2) equals: 246
 ]
 
-{ #category : 'tests - compiler' }
+{ #category : 'tests - runtime' }
 CompilerStaticCallsTest >> testStaticCallFalseReceiver [
-
-self should: [ true _SmallInteger_asFloat ] raise:  Exception
+	self fail.
+	"following code will crash the VM if it support static calls (bytecode 246)"
+	"self should: [ true _SmallInteger_asFloat ] raise: Exception"
 
 ]
 
@@ -125,14 +123,29 @@ CompilerStaticCallsTest >> testStaticCallIrStaticNodeKeyword [
 
 { #category : 'tests - runtime' }
 CompilerStaticCallsTest >> testStaticCallWithExplicitMethod [
-
-	self assert: 4 _Integer_factorial equals: 4 factorial
+	| factorialResult |
+	factorialResult := 6 factorial.
+	
+	SmallInteger compileSilently: 'factorial ^42'.
+	
+	self assert: 6 factorial equals: 42.	
+	self assert: 6 _Integer_factorial equals: factorialResult
 ]
 
 { #category : 'tests - runtime' }
 CompilerStaticCallsTest >> testStaticCallWithoutAnExplicitMethod [
 	"_asFloat means that a lookup is done at compile time and the looked up method is bound to this call site"
-	self assert: 13 _asFloat equals: 13 asFloat
+	| factorialResult |
+	
+	factorialResult := 6 factorial.
+	
+	self assert: 6 _factorial equals: factorialResult.
+	
+	SmallInteger compileSilently: 'factorial ^42'.
+	
+	self assert: 6 _factorial equals: factorialResult.	"bound at compile time when SmallInteger>>factorial did not exist"
+	
+
 ]
 
 { #category : 'tests - compiler' }
