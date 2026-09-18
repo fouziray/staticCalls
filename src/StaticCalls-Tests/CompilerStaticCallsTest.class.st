@@ -5,6 +5,12 @@ Class {
 	#package : 'StaticCalls-Tests'
 }
 
+{ #category : 'running' }
+CompilerStaticCallsTest >> tearDown [
+	SmallInteger removeSelector: #factorial.
+	super tearDown
+]
+
 { #category : 'tests - compiler' }
 CompilerStaticCallsTest >> testImplicitStaticCallResolveToCorrectMethodLookup [
 
